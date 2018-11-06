@@ -1,0 +1,21 @@
+@import "node_modules/bootstrap/scss/bootstrap";
+
+body{
+    background-color: lightblue;
+};
+
+.nav-item{
+    padding: 10% 0 10% 0;
+};
+
+.mainForm{
+    height: 25%;
+    width: 33%;
+    margin: 0 auto;
+    margin-top: 15%;
+    padding: 2%;
+};
+
+.form-group{
+    padding-bottom: 2%; 
+};
