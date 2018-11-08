@@ -44,7 +44,9 @@ PostSchema.statics.toAPI = doc => ({
   _id: doc._id,
 });
 
-PostSchema.statics.findMostRecent = callback => PostModel.find().sort({ createdDate: -1 }).exec(callback);
+PostSchema.statics.findMostRecent = callback => {
+  PostModel.find().sort({ createdDate: -1 }).exec(callback);
+};
 
 PostSchema.statics.removeByID = (docID, callback) => {
   const search = {
