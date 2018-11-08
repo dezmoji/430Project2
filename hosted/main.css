@@ -6319,11 +6319,54 @@ body {
   padding: 10% 0 10% 0; }
 
 .mainForm {
-  height: 25%;
-  width: 33%;
-  margin: 0 auto;
-  margin-top: 15%;
-  padding: 2%; }
+  height: 30%;
+  width: 50%;
+  margin: 5% auto;
+  padding: 5% auto; }
 
 .form-group {
   padding-bottom: 2%; }
+
+#content {
+  background-color: rgba(255, 255, 255, 0.336);
+  width: 50vw;
+  margin: 3% auto;
+  border: 1px solid rgba(255, 255, 255, 0.336);
+  border-radius: 10px; }
+
+.post {
+  position: relative;
+  width: 90%;
+  margin: 2% auto;
+  padding: 2%;
+  border: 1px solid darkcyan; }
+
+.post h3 {
+  margin-top: 0;
+  margin-bottom: 1%; }
+
+.post p {
+  margin-top: 1%;
+  margin-bottom: 1%; }
+
+#error {
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  width: 100%;
+  background-color: rgba(240, 128, 128, 0.699); }
+
+#errorMessage {
+  margin: 0 1%; }
+
+#closeButton {
+  position: absolute;
+  width: 1%;
+  height: 100%;
+  top: 0;
+  right: 1%;
+  background-color: transparent;
+  border: 0 hidden; }
+
+#closeButton:focus {
+  outline: none; }

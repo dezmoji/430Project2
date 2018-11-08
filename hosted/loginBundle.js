@@ -4,7 +4,7 @@ var handleLogin = function handleLogin(e) {
     e.preventDefault();
 
     if ($("#user").val() == '' || $("#pass").val() == '') {
-        handleError("RAWR! Username or password is empty");
+        handleError("Username or password is empty");
         return false;
     }
 
@@ -17,12 +17,12 @@ var handleSignup = function handleSignup(e) {
     e.preventDefault();
 
     if ($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
-        handleError("RAWR! All fields are required!");
+        handleError("All fields are required!");
         return false;
     }
 
     if ($("#pass").val() !== $("#pass2").val()) {
-        handleError("RAWR! Passwords do not match!");
+        handleError("Passwords do not match!");
         return false;
     }
 
@@ -146,16 +146,35 @@ var setup = function setup(csrf) {
     createLoginWindow(csrf);
 };
 
-var getToken = function getToken() {
-    sendAjax('GET', '/getToken', null, function (result) {
-        setup(result.csrfToken);
-    });
+var Alert = function Alert(props) {
+    return React.createElement(
+        "div",
+        { "class": "alert alert-danger alert-dismissible", role: "alert" },
+        React.createElement(
+            "p",
+            { id: "errorMessage" },
+            props.message
+        ),
+        React.createElement(
+            "button",
+            { type: "button", "class": "close", "data-dismiss": "alert", "aria-label": "Close" },
+            React.createElement(
+                "span",
+                { "aria-hidden": "true" },
+                "\xD7"
+            )
+        )
+    );
 };
 
-$(document).ready(function () {
-    getToken();
-});
-var handleError = function handleError(message) {};
+//  <button type="button" id="closeButton" onClick={removeAlert}>&times;</button>
+var removeAlert = function removeAlert() {
+    $("#error").remove(".alert");
+};
+
+var handleError = function handleError(message) {
+    ReactDOM.render(React.createElement(Alert, { message: message }), document.querySelector("#error"));
+};
 
 var redirect = function redirect(response) {
     window.location = response.redirect;
@@ -175,3 +194,13 @@ var sendAjax = function sendAjax(type, action, data, success) {
         }
     });
 };
+
+var getToken = function getToken() {
+    sendAjax('GET', '/getToken', null, function (result) {
+        setup(result.csrfToken);
+    });
+};
+
+$(document).ready(function () {
+    getToken();
+});
