@@ -1,27 +1,27 @@
-const Alert = (props) =>{
+const AlertWindow = (props) =>{
     return (
-    <div class="alert alert-danger alert-dismissible" role="alert">
-        <p id="errorMessage">{props.message}</p>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>);
-};
-
-//  <button type="button" id="closeButton" onClick={removeAlert}>&times;</button>
-const removeAlert = () =>{
-    $("#error").remove(".alert");
+        <div className="alert alert-danger alert-dismissible fade show"  id="alert" role="alert">
+            <p id="errorMessage">{props.message}</p>
+            <button type="button" className="close" data-dismiss="alert" onClick={() => $('#alert').remove()} aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    );
 };
 
 const handleError = (message) =>{
     ReactDOM.render(
-        <Alert message={message} />, document.querySelector("#error"));
+        <AlertWindow message={message} />, document.querySelector("#error")
+    );
+    return false;
 };
 
+// redirects the window location
 const redirect = (response) => {
     window.location = response.redirect;
 };
 
+// send ajax request 
 const sendAjax = (type, action, data, success) =>{
     $.ajax({
         cache: false,
@@ -37,12 +37,15 @@ const sendAjax = (type, action, data, success) =>{
     });
 };
 
+// get a token
 const getToken = () => {
     sendAjax('GET', '/getToken', null, (result) => {
+        // call the setup method in bundle
         setup(result.csrfToken);
     });
 };
 
+// get token after page loads
 $(document).ready(function() {
     getToken();
 });

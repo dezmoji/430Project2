@@ -11,15 +11,21 @@
   <link rel="stylesheet" type="text/css" href="/assets/main.css"/>
 </head>
 <body>
-   <nav class="navbar navbar-expand-lg bg-dark">
+    <nav class="navbar navbar-expand-lg bg-dark">
         <a class="navbar-brand" href="/dashboard"><b>Fumblr</b></a>
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" id="loginButton" href="/login">Login</span></a>
+                <a class="nav-link" id="dashButton" href="/dashboard">Dashboard</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="signupButton" href="/signup">Sign up</a>
+                <a class="nav-link" id="postButton" href="/addPost">Add Post</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" id="accountButton" href="/changePass">Change Password</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="logoutButton" href="/logout">Logout</a>
+            </li>   
         </ul>
     </nav>
     
@@ -29,6 +35,6 @@
         
     </div>
     <div id="error"></div>
-  <script src="/assets/loginBundle.js"></script>
+    <script src="/assets/makerBundle.js"></script>
 </body>
 </html>

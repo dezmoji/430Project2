@@ -1,60 +1,12 @@
 "use strict";
 
-var handlePost = function handlePost(e) {
-    e.preventDefault();
-
-    if ($("#title").val() == '' || $("#text").val() == '') {
-        handleError("Please fill out all fields.");
-        return false;
-    };
-
-    sendAjax('POST', $("#postForm").attr("action"), $("#postForm").serialize(), redirect);
-
-    return false;
-};
-
-var handleDelete = function handleDelete(e) {
-    e.preventDefault();
-
-    sendAjax('DELETE', $("#deletePost").attr("action"), $("#deletePost").serialize(), function () {
-        loadPostsFromServer($("#token").val());
-    });
-};
-
-var PostAdd = function PostAdd(props) {
-    return React.createElement(
-        "form",
-        { id: "postForm",
-            name: "postForm",
-            onSubmit: handlePost,
-            action: "/addPost",
-            method: "POST",
-            className: "mainForm"
-        },
-        React.createElement(
-            "div",
-            { "class": "form-group row" },
-            React.createElement("input", { "class": "form-control", id: "title", type: "text", name: "title", placeholder: "Title" })
-        ),
-        React.createElement(
-            "div",
-            { "class": "form-group" },
-            React.createElement("textarea", { "class": "form-control", id: "text", name: "text", rows: "3", placeholder: "Text here" })
-        ),
-        React.createElement("input", { type: "hidden", id: "token", name: "_csrf", value: props.csrf }),
-        React.createElement(
-            "button",
-            { "class": "btn btn-primary", type: "submit" },
-            "Make Post"
-        )
-    );
-};
-
+// List all posts
 var PostList = function PostList(props) {
+    // if there are no posts
     if (props.posts.length === 0) {
         return React.createElement(
             "div",
-            { "class": "post" },
+            { className: "post" },
             React.createElement(
                 "h3",
                 null,
@@ -63,52 +15,47 @@ var PostList = function PostList(props) {
         );
     }
 
+    // set up post
     var postNodes = props.posts.map(function (post) {
-        if (post.owner === props.id) {
-            return React.createElement(
-                "div",
-                { key: post._id, className: "post" },
+        // append the post id to the url
+        // this allows for users to click on specific posts to view them in full 
+        var postURL = "/showPost?postID=" + post._id;
+        return React.createElement(
+            "div",
+            { key: post._id, className: "post" },
+            React.createElement(
+                "h3",
+                { className: "postTitle" },
                 React.createElement(
-                    "h3",
-                    { className: "postTitle" },
+                    "b",
+                    null,
                     post.title
-                ),
-                React.createElement(
-                    "p",
-                    { className: "postText" },
-                    post.text
-                ),
-                React.createElement(
-                    "form",
-                    { id: "deletePost",
-                        onSubmit: handleDelete,
-                        name: "deletePost",
-                        action: "/deletePost",
-                        method: "DELETE"
-                    },
-                    React.createElement("input", { type: "hidden", name: "_id", value: post._id }),
-                    React.createElement("input", { type: "hidden", id: "token", name: "_csrf", value: props.csrf }),
-                    React.createElement("input", { type: "submit", value: "Delete?" })
                 )
-            );
-        } else {
-            return React.createElement(
-                "div",
-                { key: post._id, className: "post" },
+            ),
+            React.createElement(
+                "h5",
+                { className: "postCreator" },
+                "Created by: ",
+                post.createdBy
+            ),
+            React.createElement(
+                "p",
+                { className: "postDesc" },
                 React.createElement(
-                    "h3",
-                    { className: "postTitle" },
-                    post.title
-                ),
-                React.createElement(
-                    "p",
-                    { className: "postText" },
-                    post.text
+                    "i",
+                    null,
+                    post.description
                 )
-            );
-        }
+            ),
+            React.createElement(
+                "a",
+                { className: "postLink", href: postURL },
+                "Read more..."
+            )
+        );
     });
 
+    // return the posts
     return React.createElement(
         "div",
         { className: "postList" },
@@ -116,34 +63,25 @@ var PostList = function PostList(props) {
     );
 };
 
+// loads all the posts from the server
 var loadPostsFromServer = function loadPostsFromServer(csrf) {
     sendAjax('GET', '/getPosts', null, function (data) {
         ReactDOM.render(React.createElement(PostList, { posts: data.posts, csrf: csrf, id: data.userID }), document.querySelector("#content"));
     });
 };
 
-var createPostAddWindow = function createPostAddWindow(csrf) {
-    ReactDOM.render(React.createElement(PostAdd, { csrf: csrf }), document.querySelector("#content"));
-};
-
+// set up method called after page loads
 var setup = function setup(csrf) {
-    var postButton = document.querySelector("#postButton");
-
-    postButton.addEventListener("click", function (e) {
-        e.preventDefault();
-        createPostAddWindow(csrf);
-        return false;
-    });
-
     ReactDOM.render(React.createElement(PostList, { posts: [], csrf: csrf, id: -1 }), document.querySelector("#content"));
 
+    // load and render the posts from the server
     loadPostsFromServer(csrf);
 };
 
-var Alert = function Alert(props) {
+var AlertWindow = function AlertWindow(props) {
     return React.createElement(
         "div",
-        { "class": "alert alert-danger alert-dismissible", role: "alert" },
+        { className: "alert alert-danger alert-dismissible fade show", id: "alert", role: "alert" },
         React.createElement(
             "p",
             { id: "errorMessage" },
@@ -151,7 +89,9 @@ var Alert = function Alert(props) {
         ),
         React.createElement(
             "button",
-            { type: "button", "class": "close", "data-dismiss": "alert", "aria-label": "Close" },
+            { type: "button", className: "close", "data-dismiss": "alert", onClick: function onClick() {
+                    return $('#alert').remove();
+                }, "aria-label": "Close" },
             React.createElement(
                 "span",
                 { "aria-hidden": "true" },
@@ -161,19 +101,17 @@ var Alert = function Alert(props) {
     );
 };
 
-//  <button type="button" id="closeButton" onClick={removeAlert}>&times;</button>
-var removeAlert = function removeAlert() {
-    $("#error").remove(".alert");
-};
-
 var handleError = function handleError(message) {
-    ReactDOM.render(React.createElement(Alert, { message: message }), document.querySelector("#error"));
+    ReactDOM.render(React.createElement(AlertWindow, { message: message }), document.querySelector("#error"));
+    return false;
 };
 
+// redirects the window location
 var redirect = function redirect(response) {
     window.location = response.redirect;
 };
 
+// send ajax request 
 var sendAjax = function sendAjax(type, action, data, success) {
     $.ajax({
         cache: false,
@@ -189,12 +127,15 @@ var sendAjax = function sendAjax(type, action, data, success) {
     });
 };
 
+// get a token
 var getToken = function getToken() {
     sendAjax('GET', '/getToken', null, function (result) {
+        // call the setup method in bundle
         setup(result.csrfToken);
     });
 };
 
+// get token after page loads
 $(document).ready(function () {
     getToken();
 });

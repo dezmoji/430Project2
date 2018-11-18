@@ -30,12 +30,13 @@ const AccountSchema = new mongoose.Schema({
   },
 });
 
+// format how data is sent to the client
 AccountSchema.statics.toAPI = doc => ({
-  // _id is built into your mongo document and is guaranteed to be unique
   username: doc.username,
   _id: doc._id,
 });
 
+// validate password
 const validatePassword = (doc, password, callback) => {
   const pass = doc.password;
 
@@ -47,6 +48,7 @@ const validatePassword = (doc, password, callback) => {
   });
 };
 
+// search for account by username
 AccountSchema.statics.findByUsername = (name, callback) => {
   const search = {
     username: name,
@@ -55,6 +57,7 @@ AccountSchema.statics.findByUsername = (name, callback) => {
   return AccountModel.findOne(search, callback);
 };
 
+// generate hash for password
 AccountSchema.statics.generateHash = (password, callback) => {
   const salt = crypto.randomBytes(saltLength);
 
@@ -63,6 +66,7 @@ AccountSchema.statics.generateHash = (password, callback) => {
   );
 };
 
+// authenticate username and password to check for a correct login
 AccountSchema.statics.authenticate = (username, password, callback) =>
 AccountModel.findByUsername(username, (err, doc) => {
   if (err) {

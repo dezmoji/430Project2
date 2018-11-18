@@ -11,19 +11,24 @@ const PostSchema = new mongoose.Schema({
     trim: true,
   },
 
-  text: {
+  description: {
     type: String,
     required: true,
     trim: true,
   },
 
-  tags: {
-    type: mongoose.Schema.Types.Array,
-    required: false,
-    default: [],
+  body: {
+    type: String,
+    required: true,
+    trim: true,
   },
 
-  owner: {
+  createdBy:{
+    type: String,
+    required: true
+  },
+
+  ownerID: {
     type: mongoose.Schema.ObjectId,
     required: true,
     ref: 'Account',
@@ -35,19 +40,32 @@ const PostSchema = new mongoose.Schema({
   },
 });
 
+// format how data is sent to the client
 PostSchema.statics.toAPI = doc => ({
   title: doc.title,
-  text: doc.text,
-  tags: doc.tags,
-  owner: doc.owner,
+  description: doc.description,
+  body: doc.body,
+  createdBy: doc.createdBy,
+  ownerID: doc.ownerID,
   createdDate: doc.createdDate,
   _id: doc._id,
 });
 
+// find the most recent posts 
 PostSchema.statics.findMostRecent = callback => {
   PostModel.find().sort({ createdDate: -1 }).exec(callback);
 };
 
+// find posts by document ID
+PostSchema.statics.findByID = (docID, callback) => {
+  const search = {
+    _id: docID,
+  };
+
+  return PostModel.findOne(search).exec(callback);
+};
+
+// remove post using document ID
 PostSchema.statics.removeByID = (docID, callback) => {
   const search = {
     _id: docID,

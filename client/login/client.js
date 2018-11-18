@@ -1,3 +1,4 @@
+// handles login
 const handleLogin = (e) => {
     e.preventDefault();
 
@@ -11,9 +12,9 @@ const handleLogin = (e) => {
     return false;
 }
 
+// handles signup 
 const handleSignup = (e) => {
     e.preventDefault();
-
 
     if($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
         handleError("All fields are required!");
@@ -30,6 +31,7 @@ const handleSignup = (e) => {
     return false;
 };
 
+// React view for login window
 const LoginWindow = (props) => {
     return (
         <form id="loginForm" 
@@ -39,20 +41,21 @@ const LoginWindow = (props) => {
             method="POST" 
             className="mainForm"
         >
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label" htmlFor="username">Username: </label>
-                <input class="form-control" id="user" type="text" name="username" placeholder="username"/>
+            <div className="form-group row">
+                <label className="col-sm-2 col-form-label" htmlFor="username">Username: </label>
+                <input className="form-control" id="user" type="text" name="username" placeholder="username"/>
             </div>
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label" htmlFor="pass">Password: </label>
-                <input class="form-control" id="pass" type="password" name="pass" placeholder="password"/>
+            <div className="form-group row">
+                <label className="col-sm-2 col-form-label" htmlFor="pass">Password: </label>
+                <input className="form-control" id="pass" type="password" name="pass" placeholder="password"/>
             </div>
             <input type="hidden" name="_csrf" value={props.csrf}/>
-            <button class="btn btn-primary" type="submit">Sign In</button>
+            <button className="btn btn-primary" type="submit">Sign In</button>
         </form>
     );
 };
 
+// React view for signup window
 const SignupWindow = (props) => {
     return (
         <form id="signupForm" 
@@ -62,24 +65,25 @@ const SignupWindow = (props) => {
             method="POST" 
             className="mainForm"
         >
-            <div class="form-group row">
+            <div className="form-group row">
                 <label htmlFor="username">Username: </label>
-                <input class="form-control" id="user" type="text" name="username" placeholder="username"/>
+                <input className="form-control" id="user" type="text" name="username" placeholder="username"/>
             </div>
-            <div class="form-group row">
+            <div className="form-group row">
                 <label htmlFor="pass">Password: </label>
-                <input class="form-control" id="pass" type="password" name="pass" placeholder="password"/>
+                <input className="form-control" id="pass" type="password" name="pass" placeholder="password"/>
             </div>
-            <div class="form-group row">
+            <div className="form-group row">
                 <label htmlFor="pass2">Password: </label>
-                <input class="form-control" id="pass2" type="password" name="pass2" placeholder="retype password"/>
+                <input className="form-control" id="pass2" type="password" name="pass2" placeholder="retype password"/>
             </div>
             <input type="hidden" name="_csrf" value={props.csrf}/>
-            <button class="btn btn-outline-primary" type="submit">Sign Up</button>
+            <button className="btn btn-primary" type="submit">Sign Up</button>
         </form>
     );
 };
 
+// render React view for login window
 const createLoginWindow = (csrf) => {
     ReactDOM.render(
         <LoginWindow csrf={csrf} />,
@@ -87,6 +91,7 @@ const createLoginWindow = (csrf) => {
     );
 };
 
+//  render React view for signup window
 const createSignupWindow = (csrf) => {
     ReactDOM.render(
         <SignupWindow csrf={csrf} />,
@@ -94,7 +99,9 @@ const createSignupWindow = (csrf) => {
     );
 };
 
+// set up method called after page loads
 const setup = (csrf) => {
+    // set up buttons and events
     const loginButton = document.querySelector("#loginButton");
     const signupButton = document.querySelector("#signupButton");
 
@@ -110,5 +117,6 @@ const setup = (csrf) => {
         return false;
     });
 
+    // render the login window
     createLoginWindow(csrf);
 };

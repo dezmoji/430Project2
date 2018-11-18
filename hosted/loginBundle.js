@@ -1,5 +1,6 @@
 "use strict";
 
+// handles login
 var handleLogin = function handleLogin(e) {
     e.preventDefault();
 
@@ -13,6 +14,7 @@ var handleLogin = function handleLogin(e) {
     return false;
 };
 
+// handles signup 
 var handleSignup = function handleSignup(e) {
     e.preventDefault();
 
@@ -31,6 +33,7 @@ var handleSignup = function handleSignup(e) {
     return false;
 };
 
+// React view for login window
 var LoginWindow = function LoginWindow(props) {
     return React.createElement(
         "form",
@@ -43,33 +46,34 @@ var LoginWindow = function LoginWindow(props) {
         },
         React.createElement(
             "div",
-            { "class": "form-group row" },
+            { className: "form-group row" },
             React.createElement(
                 "label",
-                { "class": "col-sm-2 col-form-label", htmlFor: "username" },
+                { className: "col-sm-2 col-form-label", htmlFor: "username" },
                 "Username: "
             ),
-            React.createElement("input", { "class": "form-control", id: "user", type: "text", name: "username", placeholder: "username" })
+            React.createElement("input", { className: "form-control", id: "user", type: "text", name: "username", placeholder: "username" })
         ),
         React.createElement(
             "div",
-            { "class": "form-group row" },
+            { className: "form-group row" },
             React.createElement(
                 "label",
-                { "class": "col-sm-2 col-form-label", htmlFor: "pass" },
+                { className: "col-sm-2 col-form-label", htmlFor: "pass" },
                 "Password: "
             ),
-            React.createElement("input", { "class": "form-control", id: "pass", type: "password", name: "pass", placeholder: "password" })
+            React.createElement("input", { className: "form-control", id: "pass", type: "password", name: "pass", placeholder: "password" })
         ),
         React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
         React.createElement(
             "button",
-            { "class": "btn btn-primary", type: "submit" },
+            { className: "btn btn-primary", type: "submit" },
             "Sign In"
         )
     );
 };
 
+// React view for signup window
 var SignupWindow = function SignupWindow(props) {
     return React.createElement(
         "form",
@@ -82,52 +86,56 @@ var SignupWindow = function SignupWindow(props) {
         },
         React.createElement(
             "div",
-            { "class": "form-group row" },
+            { className: "form-group row" },
             React.createElement(
                 "label",
                 { htmlFor: "username" },
                 "Username: "
             ),
-            React.createElement("input", { "class": "form-control", id: "user", type: "text", name: "username", placeholder: "username" })
+            React.createElement("input", { className: "form-control", id: "user", type: "text", name: "username", placeholder: "username" })
         ),
         React.createElement(
             "div",
-            { "class": "form-group row" },
+            { className: "form-group row" },
             React.createElement(
                 "label",
                 { htmlFor: "pass" },
                 "Password: "
             ),
-            React.createElement("input", { "class": "form-control", id: "pass", type: "password", name: "pass", placeholder: "password" })
+            React.createElement("input", { className: "form-control", id: "pass", type: "password", name: "pass", placeholder: "password" })
         ),
         React.createElement(
             "div",
-            { "class": "form-group row" },
+            { className: "form-group row" },
             React.createElement(
                 "label",
                 { htmlFor: "pass2" },
                 "Password: "
             ),
-            React.createElement("input", { "class": "form-control", id: "pass2", type: "password", name: "pass2", placeholder: "retype password" })
+            React.createElement("input", { className: "form-control", id: "pass2", type: "password", name: "pass2", placeholder: "retype password" })
         ),
         React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
         React.createElement(
             "button",
-            { "class": "btn btn-outline-primary", type: "submit" },
+            { className: "btn btn-primary", type: "submit" },
             "Sign Up"
         )
     );
 };
 
+// render React view for login window
 var createLoginWindow = function createLoginWindow(csrf) {
     ReactDOM.render(React.createElement(LoginWindow, { csrf: csrf }), document.querySelector("#content"));
 };
 
+//  render React view for signup window
 var createSignupWindow = function createSignupWindow(csrf) {
     ReactDOM.render(React.createElement(SignupWindow, { csrf: csrf }), document.querySelector("#content"));
 };
 
+// set up method called after page loads
 var setup = function setup(csrf) {
+    // set up buttons and events
     var loginButton = document.querySelector("#loginButton");
     var signupButton = document.querySelector("#signupButton");
 
@@ -143,13 +151,14 @@ var setup = function setup(csrf) {
         return false;
     });
 
+    // render the login window
     createLoginWindow(csrf);
 };
 
-var Alert = function Alert(props) {
+var AlertWindow = function AlertWindow(props) {
     return React.createElement(
         "div",
-        { "class": "alert alert-danger alert-dismissible", role: "alert" },
+        { className: "alert alert-danger alert-dismissible fade show", id: "alert", role: "alert" },
         React.createElement(
             "p",
             { id: "errorMessage" },
@@ -157,7 +166,9 @@ var Alert = function Alert(props) {
         ),
         React.createElement(
             "button",
-            { type: "button", "class": "close", "data-dismiss": "alert", "aria-label": "Close" },
+            { type: "button", className: "close", "data-dismiss": "alert", onClick: function onClick() {
+                    return $('#alert').remove();
+                }, "aria-label": "Close" },
             React.createElement(
                 "span",
                 { "aria-hidden": "true" },
@@ -167,19 +178,17 @@ var Alert = function Alert(props) {
     );
 };
 
-//  <button type="button" id="closeButton" onClick={removeAlert}>&times;</button>
-var removeAlert = function removeAlert() {
-    $("#error").remove(".alert");
-};
-
 var handleError = function handleError(message) {
-    ReactDOM.render(React.createElement(Alert, { message: message }), document.querySelector("#error"));
+    ReactDOM.render(React.createElement(AlertWindow, { message: message }), document.querySelector("#error"));
+    return false;
 };
 
+// redirects the window location
 var redirect = function redirect(response) {
     window.location = response.redirect;
 };
 
+// send ajax request 
 var sendAjax = function sendAjax(type, action, data, success) {
     $.ajax({
         cache: false,
@@ -195,12 +204,15 @@ var sendAjax = function sendAjax(type, action, data, success) {
     });
 };
 
+// get a token
 var getToken = function getToken() {
     sendAjax('GET', '/getToken', null, function (result) {
+        // call the setup method in bundle
         setup(result.csrfToken);
     });
 };
 
+// get token after page loads
 $(document).ready(function () {
     getToken();
 });
