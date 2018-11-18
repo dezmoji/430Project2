@@ -23,9 +23,9 @@ const PostSchema = new mongoose.Schema({
     trim: true,
   },
 
-  createdBy:{
+  createdBy: {
     type: String,
-    required: true
+    required: true,
   },
 
   ownerID: {
@@ -51,7 +51,7 @@ PostSchema.statics.toAPI = doc => ({
   _id: doc._id,
 });
 
-// find the most recent posts 
+// find the most recent posts
 PostSchema.statics.findMostRecent = callback => {
   PostModel.find().sort({ createdDate: -1 }).exec(callback);
 };
@@ -72,6 +72,16 @@ PostSchema.statics.removeByID = (docID, callback) => {
   };
 
   return PostModel.find(search).remove().exec(callback);
+};
+
+// update post using docID
+PostSchema.statics.updatePostByID = (id, doc, callback) => {
+  const search = {
+    _id: id,
+  };
+
+  return PostModel.findOneAndUpdate(search,
+    { title: doc.title, description: doc.description, body: doc.body }, callback);
 };
 
 PostModel = mongoose.model('Post', PostSchema);

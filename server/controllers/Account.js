@@ -9,7 +9,7 @@ const loginPage = (req, res) => {
 
 // renders the changepass handlebar view
 const passPage = (req, res) => {
-  res.render('changepass', {csrfToken: req.csrfToken() });
+  res.render('changepass', { csrfToken: req.csrfToken() });
 };
 
 // destroy the current session and go to login page
@@ -39,7 +39,7 @@ const login = (request, response) => {
       return res.status(401).json({ error: 'Wrong username or password' });
     }
 
-    // set the session account 
+    // set the session account
     req.session.account = Account.AccountModel.toAPI(account);
 
     // redirect to the dashboard
@@ -109,38 +109,28 @@ const changePassword = (request, response) => {
   req.body.pass2 = `${req.body.pass2}`;
 
   // make sure the old password is correct
-  return Account.AccountModel.authenticate(req.session.account.username, req.body.oldPass, (err, doc) => {
+  return Account.AccountModel.authenticate(req.session.account.username, req.body.oldPass,
+  (err, doc) => {
     // if it isn't, send an error message
     if (err || !doc) {
       return res.status(401).json({ error: 'Old password is not correct.' });
-    };
+    }
 
     // if the old password is correct, generate a new hash and salt
     return Account.AccountModel.generateHash(req.body.pass, (salt, hash) => {
-      //  update property and save
-      doc.salt = salt;
-      doc.password = hash;
-      const savePromise = doc.save();
+      //  create updatedData
+      const updatedData = {
+        salt,
+        password: hash,
+      };
 
-      savePromise.then(() => {
+      return Account.AccountModel.updateAccountByID(req.session.account._id,
+      updatedData, (err2, doc2) => {
+        if (err2 || !doc2) return res.status(400).json({ error: 'An error occured' });
         return res.status(204).json();
       });
-  
-      savePromise.catch((err) => {
-        console.log(err);
-  
-        if (err.code === 11000) {
-          return res.status(400).json({ error: 'Passwrod already in use' });
-        }
-  
-        return res.status(400).json({ error: 'An error occured' });
-      });
-
-      return savePromise;
     });
-
   });
-
 };
 
 //  get a csrf token

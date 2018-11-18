@@ -8,13 +8,13 @@ const dashPage = (req, res) => {
 };
 
 // renders the addpost handlebar view
-const addPage = (req,res) => {
-  res.render('addpost', {csrfToken: req.csrfToken() });
+const addPage = (req, res) => {
+  res.render('addpost', { csrfToken: req.csrfToken() });
 };
 
 // renders the post handlebar view
-const postPage = (req, res) =>{
-  res.render('post', {csrfToken: req.csrfToken() })
+const postPage = (req, res) => {
+  res.render('post', { csrfToken: req.csrfToken() });
 };
 
 // handles adding a post
@@ -24,7 +24,7 @@ const addPost = (req, res) => {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
-  //  create the post data and save  
+  //  create the post data and save
   const postData = {
     title: req.body.title,
     description: req.body.description,
@@ -97,34 +97,36 @@ const deletePost = (request, response) => {
 };
 
 // update a post
-const updatePost = (request, response) =>{
+const updatePost = (request, response) => {
   const req = request;
   const res = response;
 
+  // make sure all fields are entered
+  if (!req.body.title || !req.body.description || !req.body.body) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  //  create the updatedData
+  const updatedData = {
+    title: req.body.title,
+    description: req.body.description,
+    body: req.body.body,
+  };
+
   // find a post by the document ID
-  return Post.PostModel.findByID(req.body._id, (err,doc) =>{
-    // make sure all fields are entered
-    if (!req.body.title || !req.body.description || !req.body.body) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
-    
-    // set the new values passed in form the client and save the doc
-    doc.title = req.body.title;
-    doc.description = req.body.description;
-    doc.body = req.body.body;
-    const savePromise = doc.save();
+  return Post.PostModel.findByID(req.body._id, (err, doc) => {
+    if (err || !doc) return res.status(400).json({ error: 'An error occured' });
 
-    savePromise.then(() => {
-      return res.json({ post:doc,  userID: req.session.account._id, redirect: '/showPost?postID=' + req.body._id });
+    return Post.PostModel.updatePostByID(req.body._id, updatedData, (err2, doc2) => {
+      if (err2) {
+        return res.status(400).json({ error: 'An error occured' });
+      }
+
+      return res.status(200)
+        .json({ post: doc2,
+          userID: req.session.account._id,
+          redirect: `/showPost?postID=${req.body._id}` });
     });
-
-    savePromise.catch((err) => {
-      console.log(err);
-
-      return res.status(400).json({ error: 'An error occured' });
-    });
-
-    return savePromise;
   });
 };
 
